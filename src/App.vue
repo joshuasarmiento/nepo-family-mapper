@@ -34,28 +34,94 @@
       </div>
     </header>
     <main class="max-w-7xl mx-auto px-4 py-6 sm:py-8">
-      <div class="grid grid-cols-1 md:grid-cols-6 gap-4 sm:gap-6">
-        <div class="col-span-4 p-4 sm:p-6 order-2 md:order-1">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+        <div class="p-4 sm:p-6 order-2 md:order-1">
           <div class="flex flex-col gap-3 sm:gap-4 mb-4 sm:mb-6">
             <label class="flex items-center gap-2 text-sm sm:text-base text-gray-700">
               <input type="checkbox" v-model="showLabels" class="rounded border-gov-blue w-4 h-4 sm:w-5 sm:h-5">
               <span>Show Labels</span>
             </label>
           </div>
-          <div class="overflow-auto">
-            <NepoGraph v-if="filteredData && filteredData.nodes.length > 0" :data="filteredData"
-              :show-labels="showLabels" :full-node-count="fullNodeCount" @node-selected="handleNodeSelected" />
-            <div v-else class="flex flex-col items-center justify-center h-96 md:h-[600px] text-center p-4">
-              <p class="text-gray-500 text-base sm:text-lg mb-2">No results found</p>
-              <p class="text-gray-400 text-sm mb-4">Try adjusting your search or filters.</p>
-              <button @click="clearFilters"
-                class="px-4 py-2 bg-gov-blue text-white rounded-md hover:bg-blue-800 transition text-sm">
-                Clear Filters
+          <div class="border border-gray-200 rounded-md overflow-hidden">
+            <!-- Tabs -->
+            <div class="flex bg-gray-100">
+              <button
+                @click="activeTab = 'network'"
+                :class="[
+                  'px-4 py-2 text-sm font-medium',
+                  activeTab === 'network'
+                    ? 'bg-white text-gov-blue border-b-2 border-gov-blue'
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                ]"
+              >
+                Network Graph
               </button>
+              <button
+                @click="activeTab = 'bar'"
+                :class="[
+                  'px-4 py-2 text-sm font-medium',
+                  activeTab === 'bar'
+                    ? 'bg-white text-gov-blue border-b-2 border-gov-blue'
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                ]"
+              >
+                Family Sizes
+              </button>
+              <button
+                @click="activeTab = 'pie'"
+                :class="[
+                  'px-4 py-2 text-sm font-medium',
+                  activeTab === 'pie'
+                    ? 'bg-white text-gov-blue border-b-2 border-gov-blue'
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                ]"
+              >
+                Position Distribution
+              </button>
+            </div>
+            <!-- Tab Content -->
+            <div class="overflow-auto h-[600px] bg-white">
+              <!-- Network Graph Tab -->
+              <div v-if="activeTab === 'network'">
+                <NepoGraph v-if="filteredData && filteredData.nodes.length > 0" :data="filteredData"
+                  :show-labels="showLabels" :full-node-count="fullNodeCount" @node-selected="handleNodeSelected" />
+                <div v-else class="flex flex-col items-center justify-center h-full text-center p-4">
+                  <p class="text-gray-500 text-base sm:text-lg mb-2">No results found</p>
+                  <p class="text-gray-400 text-sm mb-4">Try adjusting your search or filters.</p>
+                  <button @click="clearFilters"
+                    class="px-4 py-2 bg-gov-blue text-white rounded-md hover:bg-blue-800 transition text-sm">
+                    Clear Filters
+                  </button>
+                </div>
+              </div>
+              <!-- Bar Chart Tab -->
+              <div v-else-if="activeTab === 'bar'" class="flex items-center justify-center h-full">
+                <FamilyBarChart v-if="sortedFamilies.length > 0" :families="sortedFamilies" @select="filterByFamily" />
+                <div v-else class="flex flex-col items-center justify-center text-center p-4">
+                  <p class="text-gray-500 text-base sm:text-lg mb-2">No families found</p>
+                  <p class="text-gray-400 text-sm mb-4">Adjust your sorting or filters to see results.</p>
+                  <button @click="clearFilters"
+                    class="px-4 py-2 bg-gov-blue text-white rounded-md hover:bg-blue-800 transition text-sm">
+                    Clear Filters
+                  </button>
+                </div>
+              </div>
+              <!-- Pie Chart Tab -->
+              <div v-else-if="activeTab === 'pie'" class="flex items-center justify-center h-full">
+                <PositionPieChart v-if="preFamilyFilteredNodes.length > 0" :nodes="preFamilyFilteredNodes" @select="selectPosition" />
+                <div v-else class="flex flex-col items-center justify-center text-center p-4">
+                  <p class="text-gray-500 text-base sm:text-lg mb-2">No data available</p>
+                  <p class="text-gray-400 text-sm mb-4">Adjust your filters to see results.</p>
+                  <button @click="clearFilters"
+                    class="px-4 py-2 bg-gov-blue text-white rounded-md hover:bg-blue-800 transition text-sm">
+                    Clear Filters
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        <div class="col-span-2 bg-white rounded-lg shadow-md p-4 sm:p-6 border border-gray-200 order-1 md:order-2">
+        <div class="bg-white rounded-lg shadow-md p-4 sm:p-6 border border-gray-200 order-1 md:order-2">
           <div v-if="selectedNode" class="space-y-3 sm:space-y-4">
             <button @click="handleBackClick"
               class="mb-4 inline-flex items-center gap-2 px-3 py-2 bg-gov-blue text-white rounded-md text-sm hover:bg-blue-800 transition">
@@ -68,7 +134,7 @@
             </div>
             <div>
               <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Connections ({{ connections.length }})</h4>
-              <ul class="space-y-2 max-h-32 sm:max-h-100 overflow-y-auto">
+              <ul class="space-y-2 max-h-32 sm:max-h-40 overflow-y-auto">
                 <li v-for="conn in sortedConnections" :key="conn.id"
                   class="text-base sm:text-sm text-gray-700 flex flex-col sm:flex-row sm:justify-between bg-gray-50 p-2 rounded-md gap-1 sm:gap-0">
                   <span class="font-medium">{{ conn.name }}</span>
@@ -89,7 +155,7 @@
             </div>
             <div>
               <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Family Members ({{ filteredData.nodes.length }})</h4>
-              <ul class="space-y-2 max-h-32 sm:max-h-100 overflow-y-auto">
+              <ul class="space-y-2 max-h-32 sm:max-h-40 overflow-y-auto">
                 <li v-for="member in filteredData.nodes" :key="member.id"
                   class="text-base sm:text-sm text-gray-700 flex flex-col sm:flex-row sm:justify-between cursor-pointer hover:bg-gov-blue hover:bg-opacity-10 bg-gray-50 p-2 rounded-md gap-1 sm:gap-0"
                   @click="handleNodeSelected(member)">
@@ -131,6 +197,8 @@ import { ref, computed, onMounted } from 'vue'
 import * as d3 from 'd3'
 import Papa from 'papaparse'
 import NepoGraph from './components/NepoGraph.vue'
+import FamilyBarChart from './components/FamilyBarChart.vue'
+import PositionPieChart from './components/PositionPieChart.vue'
 
 const graphData = ref(null)
 const searchQuery = ref('')
@@ -141,6 +209,7 @@ const connections = ref([])
 const sortOption = ref('size-desc')
 const selectedPosition = ref('')
 const selectedLocation = ref('')
+const activeTab = ref('network')
 
 // Replace with your published CSV URLs
 const NODES_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT5qa3Oqb42A6imaxGDXHu5k6qQ8hZSJF-LveKFsdRwkoda_qlltng6Kbp-psoJgyh1p-z7Ziw8V1SZ/pub?gid=0&single=true&output=csv'
@@ -289,6 +358,10 @@ const handleBackClick = () => {
 const filterByFamily = (familyName) => {
   selectedFamily.value = familyName
   selectedNode.value = null
+}
+
+const selectPosition = (position) => {
+  selectedPosition.value = selectedPosition.value === position ? '' : position
 }
 
 const clearFilters = () => {
