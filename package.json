@@ -1,0 +1,22 @@
+{
+  "name": "nepo-family-mapper",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.13",
+    "d3": "^7.9.0",
+    "tailwindcss": "^4.1.13",
+    "vue": "^3.5.21",
+    "vue-tsc": "^3.1.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.1",
+    "vite": "^7.1.7"
+  }
+}

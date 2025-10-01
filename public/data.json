@@ -1,0 +1,414 @@
+{
+  "nodes": [
+    {
+      "id": 1,
+      "name": "Mario Eduardo Ortega",
+      "position": "Governor, La Union",
+      "type": "official",
+      "family": "Ortega Clan",
+      "location": "La Union"
+    },
+    {
+      "id": 2,
+      "name": "Raphaelle Ortega-David",
+      "position": "Former Governor, La Union",
+      "type": "official",
+      "family": "Ortega Clan",
+      "location": "La Union"
+    },
+    {
+      "id": 3,
+      "name": "Paolo Ortega",
+      "position": "Representative, La Union 1st District",
+      "type": "official",
+      "family": "Ortega Clan",
+      "location": "La Union"
+    },
+    {
+      "id": 4,
+      "name": "Jeffrey Khonghun",
+      "position": "Representative, Zambales 1st District",
+      "type": "official",
+      "family": "Khonghun Clan",
+      "location": "Zambales"
+    },
+    {
+      "id": 5,
+      "name": "Jay Khonghun",
+      "position": "Vice Governor, Zambales",
+      "type": "official",
+      "family": "Khonghun Clan",
+      "location": "Zambales"
+    },
+    {
+      "id": 6,
+      "name": "Jacqueline Khonghun",
+      "position": "Former Vice Governor, Zambales",
+      "type": "official",
+      "family": "Khonghun Clan",
+      "location": "Zambales"
+    },
+    {
+      "id": 7,
+      "name": "Ernesto Mijares Dionisio Sr.",
+      "position": "Former Mayor, Manila",
+      "type": "official",
+      "family": "Dionisio Family",
+      "location": "Manila"
+    },
+    {
+      "id": 8,
+      "name": "Ernix Dionisio",
+      "position": "Representative, Manila 1st District",
+      "type": "official",
+      "family": "Dionisio Family",
+      "location": "Manila"
+    },
+    {
+      "id": 9,
+      "name": "Mamintal Adiong Sr.",
+      "position": "Former Governor, Lanao del Sur",
+      "type": "official",
+      "family": "Adiong Dynasty",
+      "location": "Lanao del Sur"
+    },
+    {
+      "id": 10,
+      "name": "Zia Alonto Adiong",
+      "position": "Representative, Lanao del Sur 2nd District",
+      "type": "official",
+      "family": "Adiong Dynasty",
+      "location": "Lanao del Sur"
+    },
+    {
+      "id": 11,
+      "name": "Rodrigo Duterte",
+      "position": "Mayor, Davao City (2025)",
+      "type": "official",
+      "family": "Duterte Dynasty",
+      "location": "Davao City"
+    },
+    {
+      "id": 12,
+      "name": "Sara Duterte",
+      "position": "Vice President",
+      "type": "official",
+      "family": "Duterte Dynasty",
+      "location": "National"
+    },
+    {
+      "id": 13,
+      "name": "Paolo Duterte",
+      "position": "Representative, Davao 1st District",
+      "type": "official",
+      "family": "Duterte Dynasty",
+      "location": "Davao"
+    },
+    {
+      "id": 14,
+      "name": "Sebastian Duterte",
+      "position": "Mayor, Davao del Norte",
+      "type": "official",
+      "family": "Duterte Dynasty",
+      "location": "Davao del Norte"
+    },
+    {
+      "id": 15,
+      "name": "Ferdinand Marcos Jr.",
+      "position": "President",
+      "type": "official",
+      "family": "Marcos Dynasty",
+      "location": "National"
+    },
+    {
+      "id": 16,
+      "name": "Imee Marcos",
+      "position": "Senator",
+      "type": "official",
+      "family": "Marcos Dynasty",
+      "location": "National"
+    },
+    {
+      "id": 17,
+      "name": "Sandro Marcos",
+      "position": "Representative, Ilocos Norte 1st District",
+      "type": "official",
+      "family": "Marcos Dynasty",
+      "location": "Ilocos Norte"
+    },
+    {
+      "id": 18,
+      "name": "Imelda Marcos",
+      "position": "Former First Lady",
+      "type": "official",
+      "family": "Marcos Dynasty",
+      "location": "National"
+    },
+    {
+      "id": 19,
+      "name": "Matthew Marcos Manotoc",
+      "position": "Governor, Ilocos Norte",
+      "type": "official",
+      "family": "Marcos Dynasty",
+      "location": "Ilocos Norte"
+    },
+    {
+      "id": 20,
+      "name": "Gregoire Nino Hayes",
+      "position": "Board Member, Ilocos Norte",
+      "type": "official",
+      "family": "Marcos Dynasty",
+      "location": "Ilocos Norte"
+    },
+    {
+      "id": 21,
+      "name": "Gloria Macapagal Arroyo",
+      "position": "Speaker of the House",
+      "type": "official",
+      "family": "Arroyo Family",
+      "location": "National"
+    },
+    {
+      "id": 22,
+      "name": "Mikey Arroyo",
+      "position": "Representative, Pampanga 2nd District",
+      "type": "official",
+      "family": "Arroyo Family",
+      "location": "Pampanga"
+    },
+    {
+      "id": 23,
+      "name": "Jejomar Binay",
+      "position": "Former Vice President",
+      "type": "official",
+      "family": "Binay Family",
+      "location": "National"
+    },
+    {
+      "id": 24,
+      "name": "Nancy Binay",
+      "position": "Senator",
+      "type": "official",
+      "family": "Binay Family",
+      "location": "National"
+    },
+    {
+      "id": 25,
+      "name": "Abigail Binay",
+      "position": "Mayor, Makati City",
+      "type": "official",
+      "family": "Binay Family",
+      "location": "Makati"
+    },
+    {
+      "id": 26,
+      "name": "Manuel Villar",
+      "position": "Senator",
+      "type": "official",
+      "family": "Villar Family",
+      "location": "National"
+    },
+    {
+      "id": 27,
+      "name": "Cynthia Villar",
+      "position": "Senator",
+      "type": "official",
+      "family": "Villar Family",
+      "location": "National"
+    },
+    {
+      "id": 28,
+      "name": "Mark Villar",
+      "position": "Secretary of Agriculture (2025)",
+      "type": "official",
+      "family": "Villar Family",
+      "location": "National"
+    },
+    {
+      "id": 29,
+      "name": "Camille Villar",
+      "position": "Senator",
+      "type": "official",
+      "family": "Villar Family",
+      "location": "National"
+    },
+    {
+      "id": 30,
+      "name": "Joseph Estrada",
+      "position": "Mayor, Manila",
+      "type": "official",
+      "family": "Estrada Family",
+      "location": "Manila"
+    },
+    {
+      "id": 31,
+      "name": "Jinggoy Estrada",
+      "position": "Senator",
+      "type": "official",
+      "family": "Estrada Family",
+      "location": "National"
+    },
+    {
+      "id": 32,
+      "name": "JV Ejercito",
+      "position": "Senator",
+      "type": "official",
+      "family": "Estrada Family",
+      "location": "National"
+    },
+    {
+      "id": 33,
+      "name": "Benigno Aquino III",
+      "position": "Former President",
+      "type": "official",
+      "family": "Aquino Family",
+      "location": "National"
+    },
+    {
+      "id": 34,
+      "name": "Bam Aquino",
+      "position": "Former Senator",
+      "type": "official",
+      "family": "Aquino Family",
+      "location": "National"
+    },
+    {
+      "id": 35,
+      "name": "Alan Peter Cayetano",
+      "position": "Representative, Taguig",
+      "type": "official",
+      "family": "Cayetano Family",
+      "location": "Taguig"
+    },
+    {
+      "id": 36,
+      "name": "Pia Cayetano",
+      "position": "Senator",
+      "type": "official",
+      "family": "Cayetano Family",
+      "location": "National"
+    }
+  ],
+  "links": [
+    {
+      "source": 1,
+      "target": 2,
+      "relation": "Granduncle-Grandniece"
+    },
+    {
+      "source": 1,
+      "target": 3,
+      "relation": "Relative"
+    },
+    {
+      "source": 4,
+      "target": 5,
+      "relation": "Father-Son"
+    },
+    {
+      "source": 4,
+      "target": 6,
+      "relation": "Father-Daughter"
+    },
+    {
+      "source": 7,
+      "target": 8,
+      "relation": "Father-Son"
+    },
+    {
+      "source": 9,
+      "target": 10,
+      "relation": "Father-Son"
+    },
+    {
+      "source": 11,
+      "target": 12,
+      "relation": "Father-Daughter"
+    },
+    {
+      "source": 11,
+      "target": 13,
+      "relation": "Father-Son"
+    },
+    {
+      "source": 11,
+      "target": 14,
+      "relation": "Father-Son"
+    },
+    {
+      "source": 15,
+      "target": 16,
+      "relation": "Brother-Sister"
+    },
+    {
+      "source": 15,
+      "target": 17,
+      "relation": "Cousin"
+    },
+    {
+      "source": 18,
+      "target": 15,
+      "relation": "Mother-Son"
+    },
+    {
+      "source": 18,
+      "target": 16,
+      "relation": "Mother-Daughter"
+    },
+    {
+      "source": 19,
+      "target": 20,
+      "relation": "Cousin"
+    },
+    {
+      "source": 21,
+      "target": 22,
+      "relation": "Mother-Son"
+    },
+    {
+      "source": 23,
+      "target": 24,
+      "relation": "Father-Daughter"
+    },
+    {
+      "source": 23,
+      "target": 25,
+      "relation": "Father-Daughter"
+    },
+    {
+      "source": 26,
+      "target": 27,
+      "relation": "Husband-Wife"
+    },
+    {
+      "source": 26,
+      "target": 28,
+      "relation": "Father-Son"
+    },
+    {
+      "source": 26,
+      "target": 29,
+      "relation": "Father-Daughter"
+    },
+    {
+      "source": 30,
+      "target": 31,
+      "relation": "Father-Son"
+    },
+    {
+      "source": 30,
+      "target": 32,
+      "relation": "Father-Son"
+    },
+    {
+      "source": 33,
+      "target": 34,
+      "relation": "Cousin"
+    },
+    {
+      "source": 35,
+      "target": 36,
+      "relation": "Brother-Sister"
+    }
+  ]
+}
