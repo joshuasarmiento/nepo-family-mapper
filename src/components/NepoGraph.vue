@@ -1,5 +1,36 @@
 <template>
-  <svg ref="svgRef" class="w-full h-96 md:h-[600px]"></svg>
+  <div class="relative">
+    <svg ref="svgRef" class="w-full h-96 md:h-[600px]"></svg>
+    <div class="absolute top-2 right-2 flex flex-col gap-2 z-10">
+      <button
+        @click="zoomIn"
+        type="button"
+        class="px-3 py-1 bg-gray-200 text-gray-700 rounded-md text-sm hover:bg-gray-300 focus-visible:ring-2 focus-visible:ring-gov-blue focus-visible:ring-offset-2 transition-colors outline-none"
+        :aria-label="`Zoom in on the graph`"
+        title="Zoom in (+)"
+      >
+        +
+      </button>
+      <button
+        @click="zoomOut"
+        type="button"
+        class="px-3 py-1 bg-gray-200 text-gray-700 rounded-md text-sm hover:bg-gray-300 focus-visible:ring-2 focus-visible:ring-gov-blue focus-visible:ring-offset-2 transition-colors outline-none"
+        :aria-label="`Zoom out on the graph`"
+        title="Zoom out (-)"
+      >
+        -
+      </button>
+      <button
+        @click="center"
+        type="button"
+        class="px-3 py-1 bg-gov-blue text-white rounded-md text-sm hover:bg-blue-800 focus-visible:ring-2 focus-visible:ring-gov-blue focus-visible:ring-offset-2 transition-colors outline-none"
+        :aria-label="`Center the graph view`"
+        title="Center view"
+      >
+        Center
+      </button>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -19,6 +50,8 @@ let graphGroup = null
 let linkSel = null
 let nodeSel = null
 let labelSel = null
+let svg = null
+let zoomBehavior = null
 const width = 800
 const height = 600
 const DEFAULT_ZOOM = 0.4
@@ -35,7 +68,10 @@ watch(() => props.data, async (newData) => {
     } else {
       // Apply default zoom on full load
       setTimeout(() => {
-        graphGroup.attr('transform', `scale(${DEFAULT_ZOOM})`)
+        const newTransform = d3.zoomIdentity.scale(DEFAULT_ZOOM)
+        if (svg && zoomBehavior) {
+          svg.transition().duration(750).call(zoomBehavior.transform, newTransform)
+        }
       }, 800)
     }
   }
@@ -50,15 +86,19 @@ watch(() => props.showLabels, () => {
 const renderGraph = (data) => {
   if (!data) return
 
-  const svg = d3.select(svgRef.value)
+  svg = d3.select(svgRef.value)
     .attr('width', width)
     .attr('height', height)
     .style('background', 'white')
-    .call(d3.zoom().on('zoom', zoomed))
     .on('click', (event) => {
       event.stopPropagation()
       resetHighlight()
     })
+
+  zoomBehavior = d3.zoom()
+    .scaleExtent([0.1, 10])
+    .on('zoom', zoomed)
+  svg.call(zoomBehavior)
 
   graphGroup = svg.append('g')
 
@@ -144,20 +184,45 @@ function zoomed(event) {
 }
 
 function zoomToFit(nodes) {
-  if (!graphGroup || nodes.length === 0) return
+  if (!svg || !zoomBehavior || nodes.length === 0) return
   const padding = 40
   const minX = d3.min(nodes, d => d.x)
   const maxX = d3.max(nodes, d => d.x)
   const minY = d3.min(nodes, d => d.y)
   const maxY = d3.max(nodes, d => d.y)
+  if (minX === undefined || maxX === undefined || minY === undefined || maxY === undefined) return
   const dx = maxX - minX
   const dy = maxY - minY
   const x = (minX + maxX) / 2
   const y = (minY + maxY) / 2
   const scale = 0.8 / Math.max(dx / width, dy / height, 0.1)
-  const translate = [width / 2 - scale * x, height / 2 - scale * y]
-  graphGroup.transition().duration(750)
-    .attr('transform', `translate(${translate}) scale(${scale})`)
+  const translateX = width / 2 - scale * x
+  const translateY = height / 2 - scale * y
+  const newTransform = d3.zoomIdentity.translate(translateX, translateY).scale(scale)
+  svg.transition().duration(750).call(zoomBehavior.transform, newTransform)
+}
+
+const zoomIn = () => {
+  if (!svg || !zoomBehavior) return
+  const current = d3.zoomTransform(svg.node())
+  const newTransform = current.scaleBy(1.2)
+  svg.transition().duration(750).call(zoomBehavior.transform, newTransform)
+}
+
+const zoomOut = () => {
+  if (!svg || !zoomBehavior) return
+  const current = d3.zoomTransform(svg.node())
+  const newTransform = current.scaleBy(0.8)
+  svg.transition().duration(750).call(zoomBehavior.transform, newTransform)
+}
+
+const center = () => {
+  if (props.data && props.data.nodes.length > 0) {
+    zoomToFit(props.data.nodes)
+  } else if (svg && zoomBehavior) {
+    const newTransform = d3.zoomIdentity.scale(DEFAULT_ZOOM)
+    svg.transition().duration(750).call(zoomBehavior.transform, newTransform)
+  }
 }
 
 function resetHighlight() {

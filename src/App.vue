@@ -67,14 +67,35 @@
               <p class="text-xs sm:text-sm text-gray-500">Family: {{ selectedNode.family }}</p>
             </div>
             <div>
-              <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Connections ({{ connections.length }})
-              </h4>
+              <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Connections ({{ connections.length }})</h4>
               <ul class="space-y-2 max-h-32 sm:max-h-40 overflow-y-auto">
                 <li v-for="conn in sortedConnections" :key="conn.id"
                   class="text-base sm:text-sm text-gray-700 flex flex-col sm:flex-row sm:justify-between bg-gray-50 p-2 rounded-md gap-1 sm:gap-0">
                   <span class="font-medium">{{ conn.name }}</span>
                   <span class="text-xs sm:text-sm text-gray-500">{{ conn.position }} ({{ conn.location }})</span>
                   <span class="text-xs sm:text-sm text-gov-blue font-medium">{{ conn.relation }}</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div v-else-if="selectedFamily" class="space-y-3 sm:space-y-4">
+            <button @click="handleBackClick"
+              class="mb-4 inline-flex items-center gap-2 px-3 py-2 bg-gov-blue text-white rounded-md text-sm hover:bg-blue-800 transition">
+              ← Back
+            </button>
+            <div class="bg-gray-50 p-2 sm:p-3 rounded-md">
+              <h3 class="font-bold text-base sm:text-lg text-gray-900">{{ selectedFamily }}</h3>
+              <p class="text-sm text-gray-600">{{ filteredData.nodes.length }} members</p>
+            </div>
+            <div>
+              <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Family Members ({{ filteredData.nodes.length }})</h4>
+              <ul class="space-y-2 max-h-32 sm:max-h-100 overflow-y-auto">
+                <li v-for="member in filteredData.nodes" :key="member.id"
+                  class="text-base sm:text-sm text-gray-700 flex flex-col sm:flex-row sm:justify-between cursor-pointer hover:bg-gov-blue hover:bg-opacity-10 bg-gray-50 p-2 rounded-md gap-1 sm:gap-0"
+                  @click="handleNodeSelected(member)">
+                  <span class="font-medium">{{ member.name }}</span>
+                  <span class="text-xs sm:text-sm text-gray-500">{{ member.position }} ({{ member.location }})</span>
+                  <span class="text-xs sm:text-sm text-gov-blue font-medium">Family Member</span>
                 </li>
               </ul>
             </div>
@@ -115,8 +136,8 @@ const graphData = ref(null)
 const searchQuery = ref('')
 const showLabels = ref(true)
 const selectedNode = ref(null)
+const selectedFamily = ref(null)
 const connections = ref([])
-const currentData = ref(null)
 const sortOption = ref('size-desc')
 const selectedPosition = ref('')
 const selectedLocation = ref('')
@@ -149,12 +170,10 @@ const loadData = async () => {
       nodes: nodesData.filter(row => row.name),  // Skip empty rows
       links: linksData.filter(row => row.relation)  // Skip empty links
     }
-    currentData.value = graphData.value
   } catch (error) {
     console.error('Failed to load data from Sheet:', error)
     // Fallback to local JSON
     graphData.value = await d3.json('/data.json')
-    currentData.value = graphData.value
   }
 }
 
@@ -172,46 +191,50 @@ const uniqueLocations = computed(() => {
   return [...new Set(graphData.value.nodes.map(node => node.location))].sort()
 })
 
+const preFamilyFilteredNodes = computed(() => {
+  if (!graphData.value?.nodes) return []
+  return graphData.value.nodes.filter(node => {
+    // Search filter
+    if (searchQuery.value.trim()) {
+      const query = searchQuery.value.toLowerCase()
+      if (
+        !node.name.toLowerCase().includes(query) &&
+        !node.position.toLowerCase().includes(query) &&
+        !node.family.toLowerCase().includes(query) &&
+        !node.location.toLowerCase().includes(query)
+      ) {
+        return false
+      }
+    }
+    // Position filter
+    if (selectedPosition.value && node.position !== selectedPosition.value) {
+      return false
+    }
+    // Location filter
+    if (selectedLocation.value && node.location !== selectedLocation.value) {
+      return false
+    }
+    return true
+  })
+})
+
 const filteredData = computed(() => {
-  if (!graphData.value) return null
-  let resultNodes = graphData.value.nodes
-  let resultLinks = graphData.value.links
-
-  // Search filter
-  if (searchQuery.value.trim()) {
-    const query = searchQuery.value.toLowerCase()
-    resultNodes = resultNodes.filter(node =>
-      node.name.toLowerCase().includes(query) ||
-      node.position.toLowerCase().includes(query) ||
-      node.family.toLowerCase().includes(query) ||
-      node.location.toLowerCase().includes(query)
-    )
+  if (!graphData.value) return { nodes: [], links: [] }
+  let nodes = preFamilyFilteredNodes.value
+  if (selectedFamily.value) {
+    nodes = nodes.filter(node => node.family === selectedFamily.value)
   }
-
-  // Position filter
-  if (selectedPosition.value) {
-    resultNodes = resultNodes.filter(node => node.position === selectedPosition.value)
-  }
-
-  // Location filter
-  if (selectedLocation.value) {
-    resultNodes = resultNodes.filter(node => node.location === selectedLocation.value)
-  }
-
-  const nodeIds = new Set(resultNodes.map(n => n.id))
-  resultLinks = graphData.value.links.filter(link =>
-    nodeIds.has(link.source) && nodeIds.has(link.target)  // Fixed: Both ends must exist
+  const nodeIds = new Set(nodes.map(n => n.id))
+  const links = graphData.value.links.filter(link =>
+    nodeIds.has(link.source) && nodeIds.has(link.target)
   )
-
-  const result = { nodes: resultNodes, links: resultLinks }
-  currentData.value = result
-  return result
+  return { nodes, links }
 })
 
 const sortedFamilies = computed(() => {
-  if (!graphData.value) return []
+  if (!preFamilyFilteredNodes.value.length) return []
   const familyMap = {}
-  graphData.value.nodes.forEach(node => {
+  preFamilyFilteredNodes.value.forEach(node => {
     familyMap[node.family] = (familyMap[node.family] || 0) + 1
   })
   let families = Object.entries(familyMap)
@@ -236,12 +259,13 @@ const sortedConnections = computed(() => {
 
 const handleNodeSelected = (node) => {
   selectedNode.value = node
-  if (currentData.value) {
-    connections.value = currentData.value.links
+  selectedFamily.value = null
+  if (graphData.value) {
+    connections.value = graphData.value.links
       .filter(link => link.source === node.id || link.target === node.id)
       .map(link => {
         const otherId = link.source === node.id ? link.target : link.source
-        const otherNode = currentData.value.nodes.find(n => n.id === otherId)
+        const otherNode = graphData.value.nodes.find(n => n.id === otherId)
         return {
           id: otherId,
           name: otherNode ? otherNode.name : 'Unknown',
@@ -254,12 +278,17 @@ const handleNodeSelected = (node) => {
 }
 
 const handleBackClick = () => {
-  selectedNode.value = null
+  if (selectedNode.value) {
+    selectedNode.value = null
+  } else if (selectedFamily.value) {
+    selectedFamily.value = null
+  }
   connections.value = []
 }
 
 const filterByFamily = (familyName) => {
-  searchQuery.value = familyName
+  selectedFamily.value = familyName
+  selectedNode.value = null
 }
 
 const clearFilters = () => {
@@ -267,5 +296,8 @@ const clearFilters = () => {
   selectedPosition.value = ''
   selectedLocation.value = ''
   sortOption.value = 'size-desc'
+  selectedFamily.value = null
+  selectedNode.value = null
+  connections.value = []
 }
 </script>
