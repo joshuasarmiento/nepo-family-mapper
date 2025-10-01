@@ -34,8 +34,8 @@
       </div>
     </header>
     <main class="max-w-7xl mx-auto px-4 py-6 sm:py-8">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-        <div class="p-4 sm:p-6 order-2 md:order-1">
+      <div class="grid grid-cols-1 md:grid-cols-6 gap-4 sm:gap-6">
+        <div class="col-span-4 p-4 sm:p-6 order-2 md:order-1">
           <div class="flex flex-col gap-3 sm:gap-4 mb-4 sm:mb-6">
             <label class="flex items-center gap-2 text-sm sm:text-base text-gray-700">
               <input type="checkbox" v-model="showLabels" class="rounded border-gov-blue w-4 h-4 sm:w-5 sm:h-5">
@@ -55,7 +55,7 @@
             </div>
           </div>
         </div>
-        <div class="bg-white rounded-lg shadow-md p-4 sm:p-6 border border-gray-200 order-1 md:order-2">
+        <div class="col-span-2 bg-white rounded-lg shadow-md p-4 sm:p-6 border border-gray-200 order-1 md:order-2">
           <div v-if="selectedNode" class="space-y-3 sm:space-y-4">
             <button @click="handleBackClick"
               class="mb-4 inline-flex items-center gap-2 px-3 py-2 bg-gov-blue text-white rounded-md text-sm hover:bg-blue-800 transition">
@@ -68,7 +68,7 @@
             </div>
             <div>
               <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Connections ({{ connections.length }})</h4>
-              <ul class="space-y-2 max-h-32 sm:max-h-40 overflow-y-auto">
+              <ul class="space-y-2 max-h-32 sm:max-h-100 overflow-y-auto">
                 <li v-for="conn in sortedConnections" :key="conn.id"
                   class="text-base sm:text-sm text-gray-700 flex flex-col sm:flex-row sm:justify-between bg-gray-50 p-2 rounded-md gap-1 sm:gap-0">
                   <span class="font-medium">{{ conn.name }}</span>
