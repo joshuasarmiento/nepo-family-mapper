@@ -204,16 +204,12 @@ function zoomToFit(nodes) {
 
 const zoomIn = () => {
   if (!svg || !zoomBehavior) return
-  const current = d3.zoomTransform(svg.node())
-  const newTransform = current.scaleBy(1.2)
-  svg.transition().duration(750).call(zoomBehavior.transform, newTransform)
+  svg.transition().duration(300).call(zoomBehavior.scaleBy, 1.3)
 }
 
 const zoomOut = () => {
   if (!svg || !zoomBehavior) return
-  const current = d3.zoomTransform(svg.node())
-  const newTransform = current.scaleBy(0.8)
-  svg.transition().duration(750).call(zoomBehavior.transform, newTransform)
+  svg.transition().duration(300).call(zoomBehavior.scaleBy, 0.77)
 }
 
 const center = () => {
