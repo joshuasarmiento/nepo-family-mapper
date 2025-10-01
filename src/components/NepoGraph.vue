@@ -21,6 +21,7 @@ let nodeSel = null
 let labelSel = null
 const width = 800
 const height = 600
+const DEFAULT_ZOOM = 0.4
 
 watch(() => props.data, async (newData) => {
   if (newData) {
@@ -30,6 +31,11 @@ watch(() => props.data, async (newData) => {
     if (newData.nodes.length > 0 && newData.nodes.length < props.fullNodeCount) {
       setTimeout(() => {
         zoomToFit(newData.nodes)
+      }, 800)
+    } else {
+      // Apply default zoom on full load
+      setTimeout(() => {
+        graphGroup.attr('transform', `scale(${DEFAULT_ZOOM})`)
       }, 800)
     }
   }
@@ -49,7 +55,10 @@ const renderGraph = (data) => {
     .attr('height', height)
     .style('background', 'white')
     .call(d3.zoom().on('zoom', zoomed))
-    .on('click', resetHighlight)
+    .on('click', (event) => {
+      event.stopPropagation()
+      resetHighlight()
+    })
 
   graphGroup = svg.append('g')
 

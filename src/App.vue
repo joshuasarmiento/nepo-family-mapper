@@ -33,9 +33,9 @@
         </div>
       </div>
     </header>
-    <main class="max-w-5xl mx-auto px-4 py-6 sm:py-8">
+    <main class="max-w-7xl mx-auto px-4 py-6 sm:py-8">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-        <div class="bg-white rounded-lg shadow-md p-4 sm:p-6 border border-gray-200 order-2 md:order-1">
+        <div class="p-4 sm:p-6 order-2 md:order-1">
           <div class="flex flex-col gap-3 sm:gap-4 mb-4 sm:mb-6">
             <label class="flex items-center gap-2 text-sm sm:text-base text-gray-700">
               <input type="checkbox" v-model="showLabels" class="rounded border-gov-blue w-4 h-4 sm:w-5 sm:h-5">
