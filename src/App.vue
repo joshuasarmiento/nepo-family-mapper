@@ -2,49 +2,63 @@
   <div class="min-h-screen bg-white">
     <header class="bg-gov-blue text-white py-4 sm:py-6">
       <div class="max-w-7xl mx-auto px-4 text-center">
-        <h1 class="text-2xl sm:text-3xl font-bold mb-2">Nepo Family Mapper</h1>
+        <h1 class="text-2xl sm:text-3xl font-bold mb-2">Political Dynasties in the Philippines</h1>
         <p class="text-blue-100 text-sm sm:text-base max-w-2xl mx-auto">
           Visualize family ties in Philippine government appointments. Search, zoom, and explore dynasties.
         </p>
       </div>
+      <div class="max-w-6xl mx-auto px-4 py-6 sm:py-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+          <input v-model="searchQuery" type="text"
+            placeholder="Search by name, position, family, or location (e.g., 'Marcos' or 'La Union')"
+            class="border-2 border-gov-blue rounded-md px-3 py-2 sm:px-4 sm:py-3 focus:border-transparent w-full text-base">
+          <div class="flex flex-col sm:flex-row gap-2">
+            <select v-model="sortOption"
+              class="border border-gray-300 rounded-md px-2 py-1 text-sm">
+              <option value="size-desc" class="text-gray-900">Sort: Size (Desc)</option>
+              <option value="name-asc" class="text-gray-900">Sort: Name (Asc)</option>
+              <option value="name-desc" class="text-gray-900">Sort: Name (Desc)</option>
+            </select>
+            <select v-model="selectedPosition"
+              class="border border-gray-300 rounded-md px-2 py-1 text-sm">
+              <option value="" class="text-gray-900">Position: All</option>
+              <option v-for="pos in uniquePositions" :key="pos" :value="pos" class="text-gray-900">{{ pos }}</option>
+            </select>
+            <select v-model="selectedLocation"
+              class="border border-gray-300 rounded-md px-2 py-1 text-sm">
+              <option value="" class="text-gray-900">Location: All</option>
+              <option v-for="loc in uniqueLocations" :key="loc" :value="loc" class="text-gray-900">{{ loc }}</option>
+            </select>
+          </div>
+        </div>
+      </div>
     </header>
-    <main class="max-w-7xl mx-auto px-4 py-6 sm:py-8">
+    <main class="max-w-5xl mx-auto px-4 py-6 sm:py-8">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         <div class="bg-white rounded-lg shadow-md p-4 sm:p-6 border border-gray-200 order-2 md:order-1">
           <div class="flex flex-col gap-3 sm:gap-4 mb-4 sm:mb-6">
-            <input 
-              v-model="searchQuery" 
-              type="text" 
-              placeholder="Search by name, position, family, or location (e.g., 'Marcos' or 'La Union')"
-              class="border-2 border-gov-blue rounded-md px-3 py-2 sm:px-4 sm:py-3 focus:outline-none focus:ring-2 focus:ring-gov-blue focus:border-transparent w-full text-base"
-            >
+            <label class="flex items-center gap-2 text-sm sm:text-base text-gray-700">
+              <input type="checkbox" v-model="showLabels" class="rounded border-gov-blue w-4 h-4 sm:w-5 sm:h-5">
+              <span>Show Labels</span>
+            </label>
           </div>
           <div class="overflow-auto">
-            <NepoGraph 
-              v-if="filteredData && filteredData.nodes.length > 0"
-              :data="filteredData" 
-              :full-node-count="fullNodeCount"
-              @node-selected="handleNodeSelected" 
-            />
+            <NepoGraph v-if="filteredData && filteredData.nodes.length > 0" :data="filteredData"
+              :show-labels="showLabels" :full-node-count="fullNodeCount" @node-selected="handleNodeSelected" />
             <div v-else class="flex flex-col items-center justify-center h-96 md:h-[600px] text-center p-4">
               <p class="text-gray-500 text-base sm:text-lg mb-2">No results found</p>
               <p class="text-gray-400 text-sm mb-4">Try adjusting your search or filters.</p>
-              <button 
-                @click="clearFilters" 
-                class="px-4 py-2 bg-gov-blue text-white rounded-md hover:bg-blue-800 transition text-sm"
-              >
+              <button @click="clearFilters"
+                class="px-4 py-2 bg-gov-blue text-white rounded-md hover:bg-blue-800 transition text-sm">
                 Clear Filters
               </button>
             </div>
           </div>
         </div>
         <div class="bg-white rounded-lg shadow-md p-4 sm:p-6 border border-gray-200 order-1 md:order-2">
-          <h2 class="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4 border-b border-gov-blue pb-2">Details</h2>
           <div v-if="selectedNode" class="space-y-3 sm:space-y-4">
-            <button 
-              @click="selectedNode = null; connections = []" 
-              class="mb-4 inline-flex items-center gap-2 px-3 py-2 bg-gov-blue text-white rounded-md text-sm hover:bg-blue-800 transition"
-            >
+            <button @click="selectedNode = null; connections = [] && loadData() && searchQuery === ''"
+              class="mb-4 inline-flex items-center gap-2 px-3 py-2 bg-gov-blue text-white rounded-md text-sm hover:bg-blue-800 transition">
               ← Back
             </button>
             <div class="bg-gray-50 p-2 sm:p-3 rounded-md">
@@ -53,9 +67,11 @@
               <p class="text-xs sm:text-sm text-gray-500">Family: {{ selectedNode.family }}</p>
             </div>
             <div>
-              <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Connections ({{ connections.length }})</h4>
+              <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Connections ({{ connections.length }})
+              </h4>
               <ul class="space-y-2 max-h-32 sm:max-h-40 overflow-y-auto">
-                <li v-for="conn in sortedConnections" :key="conn.id" class="text-base sm:text-sm text-gray-700 flex flex-col sm:flex-row sm:justify-between bg-gray-50 p-2 rounded-md gap-1 sm:gap-0">
+                <li v-for="conn in sortedConnections" :key="conn.id"
+                  class="text-base sm:text-sm text-gray-700 flex flex-col sm:flex-row sm:justify-between bg-gray-50 p-2 rounded-md gap-1 sm:gap-0">
                   <span class="font-medium">{{ conn.name }}</span>
                   <span class="text-xs sm:text-sm text-gray-500">{{ conn.position }} ({{ conn.location }})</span>
                   <span class="text-xs sm:text-sm text-gov-blue font-medium">{{ conn.relation }}</span>
@@ -65,18 +81,11 @@
           </div>
           <div v-else class="space-y-3 sm:space-y-4">
             <div class="flex flex-col sm:flex-row gap-2 mb-3">
-              <h3 class="font-semibold text-gray-900 text-sm sm:text-base border-b border-gov-blue pb-2 flex-1">All Families</h3>
-              <div class="flex flex-col gap-2">
-                <select v-model="sortOption" class="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-gov-blue">
-                  <option value="size-desc">Sort: Size (Desc)</option>
-                  <option value="name-asc">Sort: Name (Asc)</option>
-                  <option value="name-desc">Sort: Name (Desc)</option>
-                </select>
-                
-              </div>
             </div>
             <ul v-if="sortedFamilies.length > 0" class="space-y-2">
-              <li v-for="family in sortedFamilies" :key="family.name" class="text-base sm:text-sm text-gray-700 flex flex-col sm:flex-row sm:justify-between cursor-pointer hover:bg-gov-blue hover:bg-opacity-10 p-3 rounded-md border border-gray-200 gap-1 sm:gap-2" @click="filterByFamily(family.name)">
+              <li v-for="family in sortedFamilies" :key="family.name"
+                class="text-base sm:text-sm text-gray-700 flex flex-col sm:flex-row sm:justify-between cursor-pointer hover:bg-gov-blue hover:bg-opacity-10 p-3 rounded-md border border-gray-200 gap-1 sm:gap-2"
+                @click="filterByFamily(family.name)">
                 <span>{{ family.name }}</span>
                 <span class="text-xs sm:text-sm text-gray-500">{{ family.count }} members</span>
               </li>
@@ -84,10 +93,8 @@
             <div v-else class="text-center py-8">
               <p class="text-gray-500 text-base sm:text-lg mb-2">No families found</p>
               <p class="text-gray-400 text-sm mb-4">Adjust your sorting or filters to see results.</p>
-              <button 
-                @click="clearFilters" 
-                class="px-4 py-2 bg-gov-blue text-white rounded-md hover:bg-blue-800 transition text-sm"
-              >
+              <button @click="clearFilters"
+                class="px-4 py-2 bg-gov-blue text-white rounded-md hover:bg-blue-800 transition text-sm">
                 Clear Filters
               </button>
             </div>
@@ -95,30 +102,63 @@
         </div>
       </div>
     </main>
-    <footer class="bg-gray-800 text-gray-300 py-4 sm:py-6 mt-8 sm:mt-12">
-      <div class="max-w-7xl mx-auto px-4 text-center">
-        <p class="text-sm sm:text-base">Data from 2025 public disclosures</p>
-      </div>
-    </footer>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import * as d3 from 'd3'
+import Papa from 'papaparse'
 import NepoGraph from './components/NepoGraph.vue'
 
 const graphData = ref(null)
 const searchQuery = ref('')
+const showLabels = ref(true)
 const selectedNode = ref(null)
 const connections = ref([])
 const currentData = ref(null)
 const sortOption = ref('size-desc')
+const selectedPosition = ref('')
+const selectedLocation = ref('')
 
-onMounted(async () => {
-  graphData.value = await d3.json('/data.json')
-  currentData.value = graphData.value
-})
+// Replace with your published CSV URLs
+const NODES_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT5qa3Oqb42A6imaxGDXHu5k6qQ8hZSJF-LveKFsdRwkoda_qlltng6Kbp-psoJgyh1p-z7Ziw8V1SZ/pub?gid=0&single=true&output=csv'
+const LINKS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT5qa3Oqb42A6imaxGDXHu5k6qQ8hZSJF-LveKFsdRwkoda_qlltng6Kbp-psoJgyh1p-z7Ziw8V1SZ/pub?gid=1481152180&single=true&output=csv'
+
+const loadData = async () => {
+  try {
+    // Fetch Nodes CSV
+    const nodesRes = await fetch(NODES_CSV_URL)
+    const nodesCsv = await nodesRes.text()
+    const nodesData = Papa.parse(nodesCsv, {
+      header: true,
+      skipEmptyLines: true,
+      dynamicTyping: { id: true }
+    }).data
+
+    // Fetch Links CSV
+    const linksRes = await fetch(LINKS_CSV_URL)
+    const linksCsv = await linksRes.text()
+    const linksData = Papa.parse(linksCsv, {
+      header: true,
+      skipEmptyLines: true,
+      dynamicTyping: { source: true, target: true }
+    }).data
+
+    graphData.value = {
+      nodes: nodesData.filter(row => row.name),  // Skip empty rows
+      links: linksData.filter(row => row.relation)  // Skip empty links
+    }
+    currentData.value = graphData.value
+  } catch (error) {
+    console.error('Failed to load data from Sheet:', error)
+    // Fallback to local JSON
+    graphData.value = await d3.json('/data.json')
+    currentData.value = graphData.value
+  }
+}
+
+onMounted(loadData)
 
 const fullNodeCount = computed(() => graphData.value?.nodes?.length || 0)
 
@@ -140,7 +180,7 @@ const filteredData = computed(() => {
   // Search filter
   if (searchQuery.value.trim()) {
     const query = searchQuery.value.toLowerCase()
-    resultNodes = resultNodes.filter(node => 
+    resultNodes = resultNodes.filter(node =>
       node.name.toLowerCase().includes(query) ||
       node.position.toLowerCase().includes(query) ||
       node.family.toLowerCase().includes(query) ||
@@ -148,9 +188,19 @@ const filteredData = computed(() => {
     )
   }
 
+  // Position filter
+  if (selectedPosition.value) {
+    resultNodes = resultNodes.filter(node => node.position === selectedPosition.value)
+  }
+
+  // Location filter
+  if (selectedLocation.value) {
+    resultNodes = resultNodes.filter(node => node.location === selectedLocation.value)
+  }
+
   const nodeIds = new Set(resultNodes.map(n => n.id))
-  resultLinks = graphData.value.links.filter(link => 
-    nodeIds.has(link.source) || nodeIds.has(link.target)
+  resultLinks = graphData.value.links.filter(link =>
+    nodeIds.has(link.source) && nodeIds.has(link.target)  // Fixed: Both ends must exist
   )
 
   const result = { nodes: resultNodes, links: resultLinks }
@@ -209,6 +259,8 @@ const filterByFamily = (familyName) => {
 
 const clearFilters = () => {
   searchQuery.value = ''
+  selectedPosition.value = ''
+  selectedLocation.value = ''
   sortOption.value = 'size-desc'
 }
 </script>
