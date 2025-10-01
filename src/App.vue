@@ -7,7 +7,7 @@
           Visualize family ties in Philippine government appointments. Search, zoom, and explore dynasties.
         </p>
       </div>
-      <div class="max-w-6xl mx-auto px-4 py-6 sm:py-8">
+      <!-- <div class="max-w-6xl mx-auto px-4 py-6 sm:py-8">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <input v-model="searchQuery" type="text"
             placeholder="Search by name, position, family, or location (e.g., 'Marcos' or 'La Union')"
@@ -31,7 +31,7 @@
             </select>
           </div>
         </div>
-      </div>
+      </div> -->
     </header>
     <main class="max-w-7xl mx-auto px-4 py-6 sm:py-8">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">

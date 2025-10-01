@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white rounded-lg shadow-md p-4 sm:p-6 border border-gray-200">
+  <div class="p-4 sm:p-6">
     <h3 class="text-lg font-medium text-gray-900 mb-4">Family Sizes</h3>
     <div ref="tooltipContainer" class="relative">
       <svg ref="svgRef" class="w-full h-[400px]"></svg>

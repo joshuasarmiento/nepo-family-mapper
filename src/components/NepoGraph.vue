@@ -40,7 +40,8 @@ import * as d3 from 'd3'
 const props = defineProps({
   data: { type: Object, default: null },
   showLabels: { type: Boolean, default: true },
-  fullNodeCount: { type: Number, default: 0 }
+  fullNodeCount: { type: Number, default: 0 },
+  selectedNode: { type: Object, default: null }
 })
 
 const emit = defineEmits(['node-selected'])
@@ -83,6 +84,18 @@ watch(() => props.showLabels, () => {
   }
 })
 
+watch(() => props.selectedNode, (newNode) => {
+  if (newNode && props.data && nodeSel) {
+    highlightConnections(newNode, props.data)
+    // Zoom to the selected node after simulation settles
+    setTimeout(() => {
+      if (newNode.x && newNode.y) {
+        zoomToNode(newNode)
+      }
+    }, 1000)
+  }
+})
+
 const renderGraph = (data) => {
   if (!data) return
 
@@ -112,8 +125,8 @@ const renderGraph = (data) => {
     }))
 
   simulation = d3.forceSimulation(data.nodes)
-    .force('link', d3.forceLink(links).id(d => d.id).distance(120))
-    .force('charge', d3.forceManyBody().strength(-300))
+    .force('link', d3.forceLink(links).id(d => d.id).distance(60)) // Compressed: smaller distance
+    .force('charge', d3.forceManyBody().strength(-70)) // Compressed: less repulsion
     .force('center', d3.forceCenter(width / 2, height / 2))
 
   linkSel = graphGroup.append('g')
@@ -198,6 +211,15 @@ function zoomToFit(nodes) {
   const scale = 0.8 / Math.max(dx / width, dy / height, 0.1)
   const translateX = width / 2 - scale * x
   const translateY = height / 2 - scale * y
+  const newTransform = d3.zoomIdentity.translate(translateX, translateY).scale(scale)
+  svg.transition().duration(750).call(zoomBehavior.transform, newTransform)
+}
+
+function zoomToNode(node) {
+  if (!svg || !zoomBehavior || !node || !node.x || !node.y) return
+  const scale = 2.0 // Zoom in factor
+  const translateX = width / 2 - node.x * scale
+  const translateY = height / 2 - node.y * scale
   const newTransform = d3.zoomIdentity.translate(translateX, translateY).scale(scale)
   svg.transition().duration(750).call(zoomBehavior.transform, newTransform)
 }
