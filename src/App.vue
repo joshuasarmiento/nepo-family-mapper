@@ -57,7 +57,7 @@
         </div>
         <div class="bg-white rounded-lg shadow-md p-4 sm:p-6 border border-gray-200 order-1 md:order-2">
           <div v-if="selectedNode" class="space-y-3 sm:space-y-4">
-            <button @click="selectedNode = null; connections = [] && loadData() && searchQuery === ''"
+            <button @click="handleBackClick"
               class="mb-4 inline-flex items-center gap-2 px-3 py-2 bg-gov-blue text-white rounded-md text-sm hover:bg-blue-800 transition">
               ← Back
             </button>
@@ -251,6 +251,11 @@ const handleNodeSelected = (node) => {
         }
       })
   }
+}
+
+const handleBackClick = () => {
+  selectedNode.value = null
+  connections.value = []
 }
 
 const filterByFamily = (familyName) => {
